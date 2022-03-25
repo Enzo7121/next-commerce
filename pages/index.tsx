@@ -104,6 +104,7 @@ const Home: FC<Props> = ({ products }) => {
             justifyContent="center"
           >
             <Button
+              size="lg"
               padding={4}
               as={Link}
               colorScheme="whatsapp"
@@ -111,10 +112,27 @@ const Home: FC<Props> = ({ products }) => {
                 text
               )}`}
               isExternal
+              leftIcon={
+                <Image
+                  alt="whatsapp"
+                  src="https://icongr.am/fontawesome/whatsapp.svg?size=32&color=ffffff"
+                />
+              }
             >
               Ver carrito {cart.length} productos{" "}
             </Button>
-            <Button padding={4} colorScheme="red" onClick={handleDeleteCart}>
+            <Button
+              size="lg"
+              padding={4}
+              colorScheme="red"
+              onClick={handleDeleteCart}
+              leftIcon={
+                <Image
+                  src="https://icongr.am/fontawesome/trash.svg?size=32&color=ff0000"
+                  alt="empty"
+                />
+              }
+            >
               Vaciar carrito
             </Button>
           </Flex>
