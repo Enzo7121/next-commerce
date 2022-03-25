@@ -3,7 +3,7 @@ import { FC, useMemo, useState } from "react";
 import { GetStaticProps } from "next";
 import api from "./product/api";
 import { Product } from "./product/types";
-import { Button, Grid, Stack, Text, Link, Flex } from "@chakra-ui/react";
+import { Button, Grid, Stack, Text, Link, Flex, Image } from "@chakra-ui/react";
 
 interface Props {
   products: Product[];
@@ -50,6 +50,12 @@ const Home: FC<Props> = ({ products }) => {
             spacing={3}
           >
             <Stack spacing={1}>
+              <Image
+                objectFit="cover"
+                borderTopRadius="md"
+                src={product.image}
+                alt={product.name}
+              />
               <Text>{product.name}</Text>
               <Text fontWeight="500" fontSize="sm" color="green.500">
                 {parseCurrency(product.price)}
