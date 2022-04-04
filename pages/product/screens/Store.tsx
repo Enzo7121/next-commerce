@@ -6,11 +6,8 @@ import {
   Stack,
   Text,
   Link,
-  List,
-  ListItem,
   Flex,
   HStack,
-  Image,
   Drawer,
   DrawerBody,
   DrawerFooter,
@@ -37,27 +34,50 @@ const StoreScreen: FC<Props> = ({ products }) => {
   const [isCartOpen, setCartIsOpen] = useState<boolean>(false);
 
   const total = useMemo(
-    () => cart.reduce((total, { price }) => total + price, 0),
+    () =>
+      cart.reduce((total, { price, quantity }) => total + price * quantity, 0),
     [cart]
   );
 
   const text = useMemo(() => {
     return cart
       .reduce(
-        (message, { name, price }) =>
-          message.concat(`* ${name} - ${parseCurrency(price)}\n`),
+        (message, { name, price, quantity }) =>
+          message.concat(
+            `* ${name} X${quantity} - ${parseCurrency(price * quantity)}\n`
+          ),
         ``
       )
       .concat(`\nTotal: ${parseCurrency(total)}`);
   }, [cart, total]);
 
-  const handleAddToCart = (product: Product) => {
-    setCart((cart) => [...cart, product]);
-    console.log(cart);
-  };
+  const handleEditCart = (
+    product: Product,
+    action: "increment" | "decrement"
+  ) => {
+    setCart((cart) => {
+      const isInCart = cart.some((item) => item.sku === product.sku);
 
-  const handleRemoveFromCart = (index: Number) => {
-    setCart((cart) => cart.filter((_, _index) => _index !== index));
+      if (!isInCart) {
+        return cart.concat({ ...product, quantity: 1 });
+      }
+
+      return cart.reduce((acc: any, _product) => {
+        if (product.sku !== _product.sku) {
+          return acc.concat(_product);
+        }
+
+        if (action === "decrement") {
+          if (_product.quantity === 1) {
+            return acc;
+          }
+
+          return acc.concat({ ..._product, quantity: _product.quantity - 1 });
+        } else if (action === "increment") {
+          return acc.concat({ ..._product, quantity: _product.quantity + 1 });
+        }
+      }, []);
+    });
   };
 
   return (
@@ -72,7 +92,7 @@ const StoreScreen: FC<Props> = ({ products }) => {
               <ProductCard
                 product={product}
                 key={product.sku}
-                onAdd={handleAddToCart}
+                onAdd={(product) => handleEditCart(product, "increment")}
               />
             ))}
           </Grid>
@@ -98,8 +118,10 @@ const StoreScreen: FC<Props> = ({ products }) => {
               padding={4}
               colorScheme="whatsapp"
               onClick={() => setCartIsOpen(true)}
+              width={{ base: "100%", sm: "fit-content" }}
             >
-              Ver carrito {cart.length} productos{" "}
+              Ver carrito {cart.reduce((acc, item) => acc + item.quantity, 0)}{" "}
+              productos{" "}
             </Button>
           </Flex>
         )}
@@ -108,7 +130,7 @@ const StoreScreen: FC<Props> = ({ products }) => {
         isOpen={isCartOpen}
         placement="right"
         onClose={() => setCartIsOpen(false)}
-        size="md"
+        size="sm"
       >
         <DrawerOverlay />
         <DrawerContent>
@@ -119,28 +141,35 @@ const StoreScreen: FC<Props> = ({ products }) => {
             {Boolean(!cart.length) ? (
               "Aun no agregaste nada al carrito :("
             ) : (
-              <List spacing={4}>
-                {cart.map((product, index) => (
-                  <ListItem key={product.sku}>
-                    <Text fontWeight="500">{product.name}</Text>
-                    <HStack justifyContent="space-between">
-                      <HStack spacing={3}>
+              <Stack spacing={4} divider={<Divider />}>
+                {cart.map((product) => (
+                  <HStack key={product.sku}>
+                    <Stack width="100%">
+                      <HStack justifyContent="space-between">
+                        <Text fontWeight="500">{product.name}</Text>
                         <Text color="green.400">
-                          {parseCurrency(product.price)}
+                          {parseCurrency(product.price * product.quantity)}
                         </Text>
-
+                      </HStack>
+                      <HStack>
                         <Button
-                          colorScheme="red"
-                          onClick={() => handleRemoveFromCart(index)}
                           size="xs"
+                          onClick={() => handleEditCart(product, "decrement")}
                         >
-                          X
+                          -
+                        </Button>
+                        <Text>{product.quantity}</Text>
+                        <Button
+                          size="xs"
+                          onClick={() => handleEditCart(product, "increment")}
+                        >
+                          +
                         </Button>
                       </HStack>
-                    </HStack>
-                  </ListItem>
+                    </Stack>
+                  </HStack>
                 ))}
-              </List>
+              </Stack>
             )}
           </DrawerBody>
 
