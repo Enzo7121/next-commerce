@@ -1,25 +1,45 @@
 import { FC, useMemo, useState } from "react";
 import { Product } from "../types";
-import { Button, Grid, Stack, Text, Link, Flex, Image } from "@chakra-ui/react";
 import {
-  motion,
-  AnimatePresence,
-  AnimateSharedLayout,
-  LayoutGroup,
-} from "framer-motion";
+  Button,
+  Grid,
+  Stack,
+  Text,
+  Link,
+  List,
+  ListItem,
+  Flex,
+  HStack,
+  Image,
+  Drawer,
+  DrawerBody,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
+  Divider,
+} from "@chakra-ui/react";
+import { motion } from "framer-motion";
 import { parseCurrency } from "../../../utils/currency";
 import ProductCard from "../components/productCard";
 
 interface Props {
   products: Product[];
 }
-const StoreScreen: FC<Props> = ({ products }) => {
-  const [cart, setCart] = useState<Product[]>([]);
-  const [selectedImage, setSelectedImage] = useState<any>(null);
 
-  const handleDeleteCart = () => {
-    setCart([]);
-  };
+interface CartItem extends Product {
+  quantity: number;
+}
+
+const StoreScreen: FC<Props> = ({ products }) => {
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [isCartOpen, setCartIsOpen] = useState<boolean>(false);
+
+  const total = useMemo(
+    () => cart.reduce((total, { price }) => total + price, 0),
+    [cart]
+  );
 
   const text = useMemo(() => {
     return cart
@@ -28,20 +48,20 @@ const StoreScreen: FC<Props> = ({ products }) => {
           message.concat(`* ${name} - ${parseCurrency(price)}\n`),
         ``
       )
-      .concat(
-        `\nTotal: ${parseCurrency(
-          cart.reduce((total, { price }) => total + price, 0)
-        )}`
-      );
-  }, [cart]);
+      .concat(`\nTotal: ${parseCurrency(total)}`);
+  }, [cart, total]);
 
   const handleAddToCart = (product: Product) => {
     setCart((cart) => [...cart, product]);
     console.log(cart);
   };
 
+  const handleRemoveFromCart = (index: Number) => {
+    setCart((cart) => cart.filter((_, _index) => _index !== index));
+  };
+
   return (
-    <LayoutGroup>
+    <>
       <Stack spacing={6}>
         {Boolean(products.length) ? (
           <Grid
@@ -76,59 +96,72 @@ const StoreScreen: FC<Props> = ({ products }) => {
             <Button
               size="lg"
               padding={4}
+              colorScheme="whatsapp"
+              onClick={() => setCartIsOpen(true)}
+            >
+              Ver carrito {cart.length} productos{" "}
+            </Button>
+          </Flex>
+        )}
+      </Stack>
+      <Drawer
+        isOpen={isCartOpen}
+        placement="right"
+        onClose={() => setCartIsOpen(false)}
+        size="md"
+      >
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerCloseButton />
+          <DrawerHeader>Tu pedido</DrawerHeader>
+
+          <DrawerBody>
+            {Boolean(!cart.length) ? (
+              "Aun no agregaste nada al carrito :("
+            ) : (
+              <List spacing={4}>
+                {cart.map((product, index) => (
+                  <ListItem key={product.sku}>
+                    <Text fontWeight="500">{product.name}</Text>
+                    <HStack justifyContent="space-between">
+                      <HStack spacing={3}>
+                        <Text color="green.400">
+                          {parseCurrency(product.price)}
+                        </Text>
+
+                        <Button
+                          colorScheme="red"
+                          onClick={() => handleRemoveFromCart(index)}
+                          size="xs"
+                        >
+                          X
+                        </Button>
+                      </HStack>
+                    </HStack>
+                  </ListItem>
+                ))}
+              </List>
+            )}
+          </DrawerBody>
+
+          <DrawerFooter>
+            <Button
+              width="100%"
+              size="lg"
+              padding={4}
               as={Link}
               colorScheme="whatsapp"
               href={`https://wa.me/5491124557741?text=${encodeURIComponent(
                 text
               )}`}
               isExternal
-              leftIcon={
-                <Image
-                  alt="whatsapp"
-                  src="https://icongr.am/fontawesome/whatsapp.svg?size=32&color=ffffff"
-                />
-              }
             >
-              Ver carrito {cart.length} productos{" "}
+              Completar pedido {parseCurrency(total)}
             </Button>
-            <Button
-              size="lg"
-              padding={4}
-              colorScheme="red"
-              onClick={handleDeleteCart}
-              leftIcon={
-                <Image
-                  src="https://icongr.am/fontawesome/trash.svg?size=32&color=ff0000"
-                  alt="empty"
-                />
-              }
-            >
-              Vaciar carrito
-            </Button>
-          </Flex>
-        )}
-      </Stack>
-      <AnimatePresence>
-        {selectedImage && (
-          <Flex
-            key="backdrop"
-            alignItems="center"
-            as={motion.div}
-            backgroundColor="rgba(0,0,0,0.5)"
-            justifyContent="center"
-            layoutId={selectedImage}
-            position="fixed"
-            top={0}
-            left={0}
-            height="100%"
-            width="100%"
-            onClick={() => setSelectedImage(null)}
-          >
-            <Image key="image" src={selectedImage} alt="idk" />
-          </Flex>
-        )}
-      </AnimatePresence>
-    </LayoutGroup>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+    </>
   );
 };
 
