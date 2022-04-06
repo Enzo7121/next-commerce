@@ -18,21 +18,27 @@ const ProductCard: React.FC<Props> = ({ product, onAdd }) => {
       backgroundColor="gray.100"
       key={product.sku}
       spacing={3}
+      boxShadow="md"
+      borderWidth={1}
+      borderColor="gray.100"
     >
-      <Stack spacing={1}>
+      <Stack direction="row">
         <Image
-          as={motion.img}
-          cursor="pointer"
-          layoutId={product.image}
-          objectFit="cover"
-          borderTopRadius="md"
+          loading="lazy"
           src={product.image}
+          width={16}
+          height={16}
+          objectFit="contain"
           alt={product.name}
+          backgroundColor="white"
+          borderRadius="md"
         />
-        <Text>{product.name}</Text>
-        <Text fontWeight="500" fontSize="sm" color="green.500">
-          {parseCurrency(product.price)}
-        </Text>
+        <Stack spacing={1}>
+          <Text>{product.name}</Text>
+          <Text fontWeight="500" fontSize="md" color="green.500">
+            {parseCurrency(product.price)}
+          </Text>
+        </Stack>
       </Stack>
       <Button
         onClick={() => onAdd(product)}
