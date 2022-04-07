@@ -12,42 +12,44 @@ interface Props {
 const ProductCard: React.FC<Props> = ({ product, onAdd }) => {
   return (
     <Stack
+      direction="row"
       data-test-id="product"
       borderRadius="md"
-      padding={4}
-      backgroundColor="gray.100"
+      justifyContent="space-between"
+      backgroundColor="white"
       key={product.sku}
       spacing={3}
-      boxShadow="md"
       borderWidth={1}
       borderColor="gray.100"
     >
-      <Stack direction="row">
-        <Image
-          loading="lazy"
-          src={product.image}
-          width={16}
-          height={16}
-          objectFit="contain"
-          alt={product.name}
-          backgroundColor="white"
-          borderRadius="md"
-        />
-        <Stack spacing={1}>
+      <Stack direction="row" padding={4} width="100%">
+        <Stack spacing={1} width="100%" justifyContent="space-between">
           <Text>{product.name}</Text>
-          <Text fontWeight="500" fontSize="md" color="green.500">
-            {parseCurrency(product.price)}
-          </Text>
+          <Stack
+            alignItems="flex-end"
+            direction="row"
+            justifyContent="space-between"
+          >
+            <Text fontWeight="500" fontSize="md" color="green.500">
+              {parseCurrency(product.price)}
+            </Text>
+            <Button onClick={() => onAdd(product)} size="sm">
+              Agregar
+            </Button>
+          </Stack>
         </Stack>
       </Stack>
-      <Button
-        onClick={() => onAdd(product)}
-        colorScheme="primary"
-        variant="outline"
-        size="sm"
-      >
-        Agregar
-      </Button>
+      <Image
+        loading="lazy"
+        src={product.image}
+        width={36}
+        height={36}
+        objectFit="contain"
+        alt={product.name}
+        backgroundColor="white"
+        borderRadius="md"
+        minWidth={36}
+      />
     </Stack>
   );
 };
