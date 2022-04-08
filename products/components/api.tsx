@@ -1,8 +1,8 @@
 import axios from "axios";
-import { Product } from "./types";
+import Product from "../types";
 import Papa from "papaparse";
 
-export default {
+const api = {
   list: async (): Promise<Product[]> => {
     return axios
       .get(
@@ -32,8 +32,6 @@ export default {
         });
       });
   },
-  mock: {
-    list: (mock: string): Promise<Product[]> =>
-      import(`./mocks/${mock}.json`).then((result) => result.default),
-  },
 };
+
+export default api;

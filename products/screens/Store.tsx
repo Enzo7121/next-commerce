@@ -1,8 +1,9 @@
 import { FC, useMemo, useState } from "react";
-import { Product, CartItem } from "../types";
+import CartItem from "../types";
+import Product from "../types";
 import { Button, Grid, Stack, Text, Flex } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import { editCart } from "../selectors";
+import editCart from "../components/selectors";
 import CartDrawer from "../components/CartDrawer";
 import ProductCard from "../components/ProductCard";
 

@@ -1,9 +1,9 @@
 import { FC } from "react";
 
 import { GetStaticProps } from "next";
-import api from "./product/api";
-import { Product } from "./product/types";
-import StoreScreen from "./product/screens/Store";
+import api from "../products/components/api";
+import Product from "../products/types";
+import StoreScreen from "../products/screens/Store";
 
 interface Props {
   products: Product[];

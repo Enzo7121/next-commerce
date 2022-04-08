@@ -1,9 +1,7 @@
-import { CartItem, Product } from "./types";
+import Product from "../types";
+import CartItem from "../types";
 
-export const editCart = (
-  product: Product,
-  action: "increment" | "decrement"
-) => {
+const editCart = (product: Product, action: "increment" | "decrement") => {
   return (cart: CartItem[]) => {
     const isInCart = cart.find((item) => item.sku === product.sku);
 
@@ -28,3 +26,5 @@ export const editCart = (
     }, []);
   };
 };
+
+export default editCart;

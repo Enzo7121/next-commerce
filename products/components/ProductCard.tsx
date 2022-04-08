@@ -1,8 +1,8 @@
 import React from "react";
 import { Stack, Image, Button, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import { Product } from "../types";
-import { parseCurrency } from "../../../utils/currency";
+import Product from "../types";
+import { parseCurrency } from "../../utils/currency";
 
 interface Props {
   product: Product;
@@ -20,11 +20,11 @@ const ProductCard: React.FC<Props> = ({ product, onAdd }) => {
       key={product.sku}
       spacing={3}
       borderWidth={1}
-      borderColor="gray.100"
+      borderColor="gray.200"
     >
       <Stack direction="row" padding={4} width="100%">
         <Stack spacing={1} width="100%" justifyContent="space-between">
-          <Text>{product.name}</Text>
+          <Text noOfLines={1}>{product.name}</Text>
           <Stack
             alignItems="flex-end"
             direction="row"

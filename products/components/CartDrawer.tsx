@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from "react";
-import { CartItem, Product } from "../types";
+import Product from "../types";
+import CartItem from "../types";
 import {
   HStack,
   Drawer,
@@ -8,7 +9,6 @@ import {
   DrawerHeader,
   DrawerOverlay,
   DrawerContent,
-  DrawerCloseButton,
   DrawerProps,
   Divider,
   Link,
@@ -19,7 +19,7 @@ import {
   CloseButton,
 } from "@chakra-ui/react";
 
-import { parseCurrency } from "../../../utils/currency";
+import { parseCurrency } from "../../utils/currency";
 
 interface Props extends Omit<DrawerProps, "children"> {
   items: CartItem[];
@@ -56,7 +56,7 @@ const CartDrawer: React.FC<Props> = ({
     if (!items.length) {
       onClose();
     }
-  }, [items, onClose]);
+  }, [items.length, onClose]);
 
   return (
     <Drawer placement="right" size="sm" onClose={onClose} {...props}>
